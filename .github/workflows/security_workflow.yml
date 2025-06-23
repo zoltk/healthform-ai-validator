@@ -1,0 +1,297 @@
+# .github/workflows/security.yml
+name: Security Scanning
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly on Sunday at 2 AM
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for secret scanning
+      
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd app
+          pip install -r requirements.txt
+          pip install safety bandit
+      
+      - name: Run Safety (Python dependencies)
+        run: |
+          cd app
+          safety check --json --output safety-report.json
+      
+      - name: Run Bandit (Python security)
+        run: |
+          cd app
+          bandit -r src/ -f json -o bandit-report.json
+      
+      - name: Upload Security Reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-reports
+          path: |
+            app/safety-report.json
+            app/bandit-report.json
+
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Build Docker image
+        run: |
+          cd app
+          docker build -t healthform-security-scan:latest .
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'healthform-security-scan:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  infrastructure-scan:
+    name: Infrastructure Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: terraform/
+          framework: terraform
+          soft_fail: false
+          output_format: sarif
+          output_file_path: checkov-results.sarif
+      
+      - name: Upload Checkov results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: checkov-results.sarif
+      
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform/
+          soft_fail: false
+
+  aws-security-audit:
+    name: AWS Security Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Run AWS Security Audit
+        run: |
+          # Check for public S3 buckets
+          echo "Checking for public S3 buckets..."
+          aws s3api list-buckets --query 'Buckets[].Name' --output text | while read bucket; do
+            if [ ! -z "$bucket" ]; then
+              public_access=$(aws s3api get-public-access-block --bucket "$bucket" 2>/dev/null || echo "No block")
+              if [ "$public_access" == "No block" ]; then
+                echo "WARNING: Bucket $bucket may be public"
+              fi
+            fi
+          done
+          
+          # Check Security Groups for wide-open rules
+          echo "Checking Security Groups..."
+          aws ec2 describe-security-groups \
+            --filters "Name=ip-permission.cidr,Values=0.0.0.0/0" \
+            --query 'SecurityGroups[?IpPermissions[?IpRanges[?CidrIp==`0.0.0.0/0`]]].[GroupId,GroupName]' \
+            --output table
+          
+          # Check for root access keys
+          echo "Checking for root access keys..."
+          root_keys=$(aws iam get-account-summary --query 'SummaryMap.AccountAccessKeysPresent' --output text)
+          if [ "$root_keys" == "1" ]; then
+            echo "WARNING: Root access keys detected"
+          fi
+          
+          # Check CloudTrail status
+          echo "Checking CloudTrail..."
+          trails=$(aws cloudtrail describe-trails --query 'trailList[?IsLogging==`true`]' --output json)
+          if [ "$trails" == "[]" ]; then
+            echo "WARNING: No active CloudTrail found"
+          fi
+
+  compliance-check:
+    name: HIPAA Compliance Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: HIPAA Compliance Audit
+        run: |
+          echo "=== HIPAA Compliance Check ==="
+          
+          # Check encryption at rest for RDS
+          echo "Checking RDS encryption..."
+          aws rds describe-db-instances \
+            --query 'DBInstances[?StorageEncrypted==`false`].[DBInstanceIdentifier]' \
+            --output table
+          
+          # Check S3 bucket encryption
+          echo "Checking S3 encryption..."
+          aws s3api list-buckets --query 'Buckets[].Name' --output text | while read bucket; do
+            if [ ! -z "$bucket" ]; then
+              encryption=$(aws s3api get-bucket-encryption --bucket "$bucket" 2>/dev/null || echo "No encryption")
+              if [ "$encryption" == "No encryption" ]; then
+                echo "WARNING: Bucket $bucket is not encrypted"
+              fi
+            fi
+          done
+          
+          # Check VPC Flow Logs
+          echo "Checking VPC Flow Logs..."
+          vpcs=$(aws ec2 describe-vpcs --query 'Vpcs[].VpcId' --output text)
+          for vpc in $vpcs; do
+            flow_logs=$(aws ec2 describe-flow-logs --filter "Name=resource-id,Values=$vpc" --query 'FlowLogs' --output json)
+            if [ "$flow_logs" == "[]" ]; then
+              echo "WARNING: VPC $vpc has no flow logs enabled"
+            fi
+          done
+          
+          # Check GuardDuty
+          echo "Checking GuardDuty..."
+          detectors=$(aws guardduty list-detectors --query 'DetectorIds' --output json)
+          if [ "$detectors" == "[]" ]; then
+            echo "WARNING: GuardDuty is not enabled"
+          fi
+
+  notify-security-results:
+    name: Notify Security Results
+    runs-on: ubuntu-latest
+    needs: [secret-scan, dependency-scan, infrastructure-scan]
+    if: always()
+    steps:
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          channel: '#security'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          custom_payload: |
+            {
+              "text": "Security Scan Results",
+              "attachments": [
+                {
+                  "color": "${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}",
+                  "fields": [
+                    {
+                      "title": "Secret Scan",
+                      "value": "${{ needs.secret-scan.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Dependency Scan",
+                      "value": "${{ needs.dependency-scan.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Infrastructure Scan",
+                      "value": "${{ needs.infrastructure-scan.result }}",
+                      "short": true
+                    }
+                  ]
+                }
+              ]
+            }
+
+  security-summary:
+    name: Generate Security Summary
+    runs-on: ubuntu-latest
+    needs: [secret-scan, dependency-scan, infrastructure-scan]
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Create Security Report
+        run: |
+          echo "# Security Scan Summary" > security-summary.md
+          echo "Generated on: $(date)" >> security-summary.md
+          echo "" >> security-summary.md
+          echo "## Scan Results" >> security-summary.md
+          echo "- Secret Detection: ${{ needs.secret-scan.result }}" >> security-summary.md
+          echo "- Dependency Scan: ${{ needs.dependency-scan.result }}" >> security-summary.md
+          echo "- Infrastructure Scan: ${{ needs.infrastructure-scan.result }}" >> security-summary.md
+          
+          if [ "${{ contains(needs.*.result, 'failure') }}" == "true" ]; then
+            echo "" >> security-summary.md
+            echo "⚠️ **Action Required**: One or more security scans failed. Please review the results and remediate any findings." >> security-summary.md
+          else
+            echo "" >> security-summary.md
+            echo "✅ **All Clear**: All security scans passed successfully." >> security-summary.md
+          fi
+      
+      - name: Upload Security Summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-summary
+          path: security-summary.md

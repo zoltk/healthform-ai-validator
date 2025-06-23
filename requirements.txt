@@ -1,0 +1,62 @@
+# HealthForm AI Validator - Python Dependencies
+# Core Application Dependencies
+
+# Streamlit - Web application framework
+streamlit==1.28.1
+
+# OpenAI - AI/ML API client
+openai==1.35.0
+
+# Environment Management
+python-dotenv==1.0.0
+setuptools==69.0.0
+
+# Data Processing
+pandas==2.1.3
+numpy==1.24.3
+
+# Text Processing & Parsing
+regex==2023.10.3
+
+# Date/Time Utilities
+python-dateutil==2.8.2
+
+# HTTP Requests (for potential API integrations)
+requests==2.31.0
+
+# JSON Processing (enhanced)
+jsonschema==4.19.2
+
+# Logging & Monitoring
+structlog==23.2.0
+
+# Security & Validation
+cryptography==41.0.7
+validators==0.22.0
+
+# Development Dependencies
+# (Remove these for production deployment)
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Code Quality
+black==23.11.0
+flake8==6.1.0
+isort==5.12.0
+mypy==1.7.1
+
+# Security Scanning
+bandit==1.7.5
+safety==2.3.5
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+
+# Development Tools
+pre-commit==3.5.0
+ipython==8.17.2
+jupyter==1.0.0

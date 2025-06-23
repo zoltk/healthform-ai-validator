@@ -1,0 +1,73 @@
+{
+  "timestamp": "20250622_211758",
+  "patient_data": {
+    "name": "Robert M. Thompson",
+    "age": 65,
+    "gender": "Male",
+    "weight": "185 lbs  Height: 5 ft 10 in",
+    "chief_complaint": "Chest pain and shortness of breath for the past 3 days. Pain is crushing, radiates to left arm.\r\nWorse with exertion, some relief with rest. Also experiencing some nausea and sweating.\r\nConcerned about heart attack.\r\nDuration of symptoms: 3 days\r\nSeverity (1",
+    "medications": [
+      "Warfarin 5mg Daily",
+      "Aspirin 81mg Daily",
+      "Lisinopril 10mg Daily",
+      "Metformin 500mg Twice daily",
+      "Atorvastatin 40mg Daily",
+      "Multivitamin 1 tablet Daily"
+    ],
+    "allergies": "Penicillin - causes severe rash and swelling",
+    "vital_signs": {
+      "blood_pressure": "180 / 110",
+      "heart_rate": "95",
+      "temperature": "98.8"
+    },
+    "medical_history": "Diabetes, Hypertension, Heart Disease",
+    "social_history": ""
+  },
+  "ai_analysis": {
+    "CRITICAL ALERTS": [
+      {
+        "severity": "CRITICAL",
+        "message": "Patient presents with chest pain, shortness of breath, and other symptoms suggestive of a heart attack. Immediate evaluation and intervention are necessary to rule out acute coronary syndrome."
+      },
+      {
+        "severity": "CRITICAL",
+        "message": "High blood pressure reading of 180/110 mmHg requires urgent attention to prevent complications such as stroke or heart attack."
+      }
+    ],
+    "DRUG INTERACTIONS": [
+      {
+        "severity": "WARNING",
+        "message": "Warfarin and aspirin combination may increase the risk of bleeding. Monitor for signs of bleeding such as easy bruising or blood in stool."
+      },
+      {
+        "severity": "WARNING",
+        "message": "Lisinopril and metformin combination may increase the risk of high potassium levels (hyperkalemia). Monitor potassium levels regularly."
+      }
+    ],
+    "MISSING INFORMATION": [
+      {
+        "severity": "MODERATE",
+        "message": "Missing information on the patient's recent ECG results to assess for any cardiac abnormalities."
+      },
+      {
+        "severity": "MODERATE",
+        "message": "No information provided on the patient's cholesterol levels. Consider checking lipid profile to assess cardiovascular risk."
+      }
+    ],
+    "CLINICAL RECOMMENDATIONS": [
+      {
+        "severity": "CRITICAL",
+        "message": "Urgent referral to a cardiologist for further evaluation of chest pain and shortness of breath. Consider cardiac enzymes, ECG, and echocardiogram."
+      },
+      {
+        "severity": "HIGH",
+        "message": "Immediate blood pressure management is crucial. Consider initiating or adjusting antihypertensive therapy to lower blood pressure to a safer range."
+      },
+      {
+        "severity": "HIGH",
+        "message": "Consider holding aspirin temporarily due to the suspected acute coronary syndrome until cardiology evaluation is completed to avoid potential bleeding risk."
+      }
+    ]
+  },
+  "original_form_text": "PATIENT INTAKE FORM\r\nMERCY GENERAL HOSPITAL\r\nInternal Medicine Department\r\n\r\nPATIENT INFORMATION\r\nDate: 03/15/2024\r\nPatient Name: Robert M. Thompson\r\nDOB: 08/12/1958  Age: 65  Gender: M\r\nWeight: 185 lbs  Height: 5 ft 10 in\r\nPhone: (555) 234-7890  Emergency Contact: Margaret Thompson (wife) - (555) 234-7891\r\n\r\nINSURANCE INFORMATION\r\nPrimary Insurance: Blue Cross Blue Shield\r\nPolicy Number: BC789456123  Group Number: 45789\r\nSecondary Insurance: Medicare Part B\r\n\r\nCHIEF COMPLAINT\r\nPrimary reason for today's visit:\r\nChest pain and shortness of breath for the past 3 days. Pain is crushing, radiates to left arm.\r\nWorse with exertion, some relief with rest. Also experiencing some nausea and sweating.\r\nConcerned about heart attack.\r\nDuration of symptoms: 3 days\r\nSeverity (1-10): 7\r\n\r\nCURRENT MEDICATIONS\r\nPlease list ALL medications, including over-the-counter and supplements\r\nMedication Name | Dosage | Frequency | Prescribing Doctor\r\nWarfarin | 5mg | Daily | Dr. Johnson\r\nAspirin | 81mg | Daily | Dr. Johnson\r\nLisinopril | 10mg | Daily | Dr. Johnson\r\nMetformin | 500mg | Twice daily | Dr. Martinez\r\nAtorvastatin | 40mg | Daily | Dr. Johnson\r\nMultivitamin | 1 tablet | Daily | Self\r\n\r\nALLERGIES\r\nDrug Allergies:\r\nPenicillin - causes severe rash and swelling\r\nReaction: Anaphylaxis in 1995, required hospitalization\r\nFood Allergies:\r\nShellfish - mild reaction, hives\r\nEnvironmental Allergies:\r\nSeasonal pollen, dust mites\r\n\r\nMEDICAL HISTORY\r\nPrevious Hospitalizations:\r\n2019 - Heart catheterization, 2020 - COVID-19 pneumonia\r\nPrevious Surgeries:\r\n2018 - Appendectomy, 2019 - Cardiac stent placement (LAD)\r\nChronic Conditions:\r\nDiabetes, Hypertension, Heart Disease\r\nOther: Coronary artery disease, Type 2 diabetes, hyperlipidemia\r\n\r\nFAMILY HISTORY\r\nHeart Disease: Yes  Relation: Father (MI at age 62)\r\nCancer: Yes  Type: Prostate  Relation: Brother\r\nDiabetes: Yes  Relation: Mother, maternal grandmother\r\nMental Health: No\r\n\r\nSOCIAL HISTORY\r\nTobacco Use: Former  Packs/day: 1  Years: 20 (quit 2019)\r\nAlcohol Use: Occasional  Drinks/week: 2-3\r\nRecreational Drugs: No\r\nExercise: Light  Frequency: Walking 3x/week\r\n\r\nVITAL SIGNS (To be completed by medical staff)\r\nBlood Pressure: 180 / 110  Heart Rate: 95  Temperature: 98.8\r\nRespiratory Rate: 22  Oxygen Saturation: 96%  Pain Level: 7/10\r\n\r\nREVIEW OF SYSTEMS\r\nConstitutional: Fatigue\r\nCardiovascular: Chest Pain, Shortness of Breath, Palpitations\r\nRespiratory: Shortness of Breath\r\nGastrointestinal: Nausea\r\nNeurological: None\r\nPsychiatric: Anxiety, Sleep Problems\r\n\r\nPatient Signature: Robert Thompson  Date: 03/15/2024\r\nStaff Signature: J. Davis, RN  Date: 03/15/2024\r\n\r\nForm Version 2024.1 - Internal Medicine"
+}

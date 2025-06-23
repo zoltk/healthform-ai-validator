@@ -1,0 +1,54 @@
+{
+  "timestamp": "20250622_214027",
+  "patient_data": {
+    "name": "Sarah Chen",
+    "age": 37,
+    "gender": "Female",
+    "weight": "125 lbs",
+    "chief_complaint": "Experiencing severe fatigue, frequent urination, excessive thirst, and unexplained weight loss over the past 3 weeks. Also having occasional blurred vision and slow",
+    "medications": [
+      "Birth Control Pills 0.15mg/0.03mg Daily",
+      "Ibuprofen 400mg As needed",
+      "Multivitamin 1 tablet Daily"
+    ],
+    "allergies": "Penicillin (causes severe rash and swelling)",
+    "vital_signs": {
+      "blood_pressure": "145/92",
+      "heart_rate": "98",
+      "temperature": "99.2\u00b0F"
+    },
+    "medical_history": "Family history of Type 2 diabetes (mother, grandmother), hypertension (father)",
+    "social_history": ""
+  },
+  "ai_analysis": {
+    "critical_alerts": [
+      {
+        "severity": "high",
+        "message": "Urgent evaluation for diabetes mellitus is needed due to symptoms of fatigue, frequent urination, excessive thirst, unexplained weight loss, blurred vision, and family history of Type 2 diabetes."
+      },
+      {
+        "severity": "medium",
+        "message": "High blood pressure reading of 145/92 requires monitoring and further evaluation to assess for hypertension."
+      }
+    ],
+    "drug_interactions": [
+      {
+        "severity": "low",
+        "message": "No significant drug-drug interactions detected among the current medications."
+      }
+    ],
+    "missing_info": [
+      {
+        "severity": "high",
+        "message": "Missing information on blood glucose levels and HbA1c to assess for diabetes mellitus."
+      }
+    ],
+    "recommendations": [
+      {
+        "severity": "high",
+        "message": "Immediate referral to a healthcare provider for comprehensive evaluation of diabetes mellitus including blood glucose testing, HbA1c, and further workup. Monitor blood pressure closely and consider lifestyle modifications for hypertension prevention."
+      }
+    ]
+  },
+  "original_form_text": "COMPREHENSIVE MEDICAL INTAKE FORM\r\n\r\nPatient Name: Sarah Chen\r\nDate of Birth: March 15, 1988\r\nAge: 37\r\nGender: F\r\nWeight: 125 lbs\r\nHeight: 5'4\"\r\nPhone: (555) 234-5678\r\nEmergency Contact: Michael Chen (Husband) - (555) 234-5679\r\n\r\nPrimary reason for today's visit:\r\nExperiencing severe fatigue, frequent urination, excessive thirst, and unexplained weight loss over the past 3 weeks. Also having occasional blurred vision and slow-healing cuts on hands.\r\n\r\nCURRENT MEDICATIONS:\r\nMedication Name | Dosage | Frequency | Prescribing Doctor\r\nBirth Control Pills | 0.15mg/0.03mg | Daily | Dr. Williams\r\nIbuprofen | 400mg | As needed | Over-the-counter\r\nMultivitamin | 1 tablet | Daily | Self-administered\r\n\r\nDrug Allergies:\r\nPenicillin (causes severe rash and swelling)\r\n\r\nVITAL SIGNS:\r\nBlood Pressure: 145/92\r\nHeart Rate: 98\r\nTemperature: 99.2\u00b0F\r\nRespiratory Rate: 18\r\nOxygen Saturation: 97%\r\n\r\nMEDICAL HISTORY:\r\nChronic Conditions:\r\nFamily history of Type 2 diabetes (mother, grandmother), hypertension (father)\r\n\r\nPrevious Surgeries:\r\nAppendectomy (2019)\r\n\r\nSOCIAL HISTORY:\r\nTobacco Use: Never\r\nAlcohol Use: Occasional social drinking (2-3 drinks per week)\r\nExercise: Minimal due to recent fatigue\r\nDiet: Regular diet, has been eating more sweets lately due to cravings\r\nOccupation: Software Engineer (sedentary work)\r\nStress Level: High due to work deadlines\r\n\r\nFAMILY HISTORY:\r\nMother: Type 2 Diabetes, Hypertension (age 58)\r\nFather: Hypertension, High Cholesterol (age 62)\r\nGrandmother (maternal): Type 2 Diabetes, died from complications\r\nSiblings: One brother, healthy\r\n\r\nREVIEW OF SYSTEMS:\r\nConstitutional: Fatigue, weight loss (15 lbs in 3 weeks), increased appetite\r\nEyes: Blurred vision, especially when reading\r\nCardiovascular: No chest pain, occasional palpitations\r\nGenitourinary: Frequent urination, especially at night (4-5 times)\r\nSkin: Slow healing cuts, dry skin\r\nNeurological: Mild dizziness when standing quickly\r\n\r\nADDITIONAL NOTES:\r\nPatient reports recent high stress at work, poor sleep quality, and has noticed increased thirst requiring her to drink water constantly throughout the day. She has been concerned about the rapid weight loss despite eating more than usual.\r\n\r\nASSESSMENT NEEDED:\r\n- Blood glucose testing\r\n- HbA1c\r\n- Comprehensive metabolic panel\r\n- Thyroid function tests\r\n- Urinalysis\r\n\r\nProvider: Dr. Jennifer Martinez, MD\r\nDate: June 22, 2025\r\nTime: 2:30 PM"
+}

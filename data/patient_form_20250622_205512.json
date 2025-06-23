@@ -1,0 +1,45 @@
+{
+  "timestamp": "20250622_205512",
+  "patient_data": {
+    "name": "Robert M. Thompson",
+    "age": 65,
+    "gender": "Male",
+    "weight": "185 lbs  Height: 5 ft 10 in",
+    "chief_complaint": "Chest pain and shortness of breath for the past 3 days. Pain is crushing, radiates to left arm.\r\nWorse with exertion, some relief with rest. Also experiencing some nausea and sweating.\r\nConcerned about heart attack.\r\nDuration of symptoms: 3 days\r\nSeverity (1",
+    "medications": [],
+    "allergies": "Penicillin - causes severe rash and swelling",
+    "vital_signs": {
+      "blood_pressure": "180 / 110",
+      "heart_rate": "95",
+      "temperature": "98.8"
+    },
+    "medical_history": "Diabetes, Hypertension, Heart Disease",
+    "social_history": ""
+  },
+  "ai_analysis": {
+    "CRITICAL ALERTS": [
+      {
+        "severity": "Severe",
+        "message": "Patient presents with chest pain, shortness of breath, and other symptoms concerning for a heart attack. Immediate evaluation and intervention are necessary."
+      }
+    ],
+    "DRUG INTERACTIONS": [],
+    "MISSING INFORMATION": [
+      {
+        "severity": "Moderate",
+        "message": "No current medications listed. It is important to review and update the patient's medication list for potential interactions or necessary treatments."
+      }
+    ],
+    "CLINICAL RECOMMENDATIONS": [
+      {
+        "severity": "Severe",
+        "message": "Urgent evaluation by a healthcare provider is needed to assess for a possible heart attack. ECG, cardiac enzymes, and further diagnostic tests should be considered. Immediate treatment to stabilize the patient and manage symptoms is crucial."
+      },
+      {
+        "severity": "Moderate",
+        "message": "Considering the patient's medical history of diabetes, hypertension, and heart disease, close monitoring of blood pressure, heart rate, and glucose levels is essential. Consultation with a cardiologist and endocrinologist may be beneficial for comprehensive management."
+      }
+    ]
+  },
+  "original_form_text": "PATIENT INTAKE FORM\r\nMERCY GENERAL HOSPITAL\r\nInternal Medicine Department\r\n\r\nPATIENT INFORMATION\r\nDate: 03/15/2024\r\nPatient Name: Robert M. Thompson\r\nDOB: 08/12/1958  Age: 65  Gender: M\r\nWeight: 185 lbs  Height: 5 ft 10 in\r\nPhone: (555) 234-7890  Emergency Contact: Margaret Thompson (wife) - (555) 234-7891\r\n\r\nINSURANCE INFORMATION\r\nPrimary Insurance: Blue Cross Blue Shield\r\nPolicy Number: BC789456123  Group Number: 45789\r\nSecondary Insurance: Medicare Part B\r\n\r\nCHIEF COMPLAINT\r\nPrimary reason for today's visit:\r\nChest pain and shortness of breath for the past 3 days. Pain is crushing, radiates to left arm.\r\nWorse with exertion, some relief with rest. Also experiencing some nausea and sweating.\r\nConcerned about heart attack.\r\nDuration of symptoms: 3 days\r\nSeverity (1-10): 7\r\n\r\nCURRENT MEDICATIONS\r\nPlease list ALL medications, including over-the-counter and supplements\r\nMedication Name | Dosage | Frequency | Prescribing Doctor\r\nWarfarin | 5mg | Daily | Dr. Johnson\r\nAspirin | 81mg | Daily | Dr. Johnson\r\nLisinopril | 10mg | Daily | Dr. Johnson\r\nMetformin | 500mg | Twice daily | Dr. Martinez\r\nAtorvastatin | 40mg | Daily | Dr. Johnson\r\nMultivitamin | 1 tablet | Daily | Self\r\n\r\nALLERGIES\r\nDrug Allergies:\r\nPenicillin - causes severe rash and swelling\r\nReaction: Anaphylaxis in 1995, required hospitalization\r\nFood Allergies:\r\nShellfish - mild reaction, hives\r\nEnvironmental Allergies:\r\nSeasonal pollen, dust mites\r\n\r\nMEDICAL HISTORY\r\nPrevious Hospitalizations:\r\n2019 - Heart catheterization, 2020 - COVID-19 pneumonia\r\nPrevious Surgeries:\r\n2018 - Appendectomy, 2019 - Cardiac stent placement (LAD)\r\nChronic Conditions:\r\nDiabetes, Hypertension, Heart Disease\r\nOther: Coronary artery disease, Type 2 diabetes, hyperlipidemia\r\n\r\nFAMILY HISTORY\r\nHeart Disease: Yes  Relation: Father (MI at age 62)\r\nCancer: Yes  Type: Prostate  Relation: Brother\r\nDiabetes: Yes  Relation: Mother, maternal grandmother\r\nMental Health: No\r\n\r\nSOCIAL HISTORY\r\nTobacco Use: Former  Packs/day: 1  Years: 20 (quit 2019)\r\nAlcohol Use: Occasional  Drinks/week: 2-3\r\nRecreational Drugs: No\r\nExercise: Light  Frequency: Walking 3x/week\r\n\r\nVITAL SIGNS (To be completed by medical staff)\r\nBlood Pressure: 180 / 110  Heart Rate: 95  Temperature: 98.8\r\nRespiratory Rate: 22  Oxygen Saturation: 96%  Pain Level: 7/10\r\n\r\nREVIEW OF SYSTEMS\r\nConstitutional: Fatigue\r\nCardiovascular: Chest Pain, Shortness of Breath, Palpitations\r\nRespiratory: Shortness of Breath\r\nGastrointestinal: Nausea\r\nNeurological: None\r\nPsychiatric: Anxiety, Sleep Problems\r\n\r\nPatient Signature: Robert Thompson  Date: 03/15/2024\r\nStaff Signature: J. Davis, RN  Date: 03/15/2024\r\n\r\nForm Version 2024.1 - Internal Medicine"
+}

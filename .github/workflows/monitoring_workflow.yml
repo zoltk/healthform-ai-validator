@@ -1,0 +1,266 @@
+# .github/workflows/monitoring.yml
+name: Monitoring and DR Tests
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday at 6 AM
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  backup-test:
+    name: Test Backup Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Test RDS Backup
+        run: |
+          # Get latest snapshot
+          SNAPSHOT=$(aws rds describe-db-snapshots \
+            --db-instance-identifier healthform-db \
+            --snapshot-type automated \
+            --query 'DBSnapshots[0].DBSnapshotIdentifier' \
+            --output text)
+          
+          echo "Latest snapshot: $SNAPSHOT"
+          
+          # Verify snapshot status
+          STATUS=$(aws rds describe-db-snapshots \
+            --db-snapshot-identifier $SNAPSHOT \
+            --query 'DBSnapshots[0].Status' \
+            --output text)
+          
+          if [ "$STATUS" != "available" ]; then
+            echo "Backup test failed: Snapshot not available"
+            exit 1
+          fi
+          
+          echo "Backup test passed: Snapshot is available"
+      
+      - name: Test S3 Replication
+        run: |
+          # Check cross-region replication
+          aws s3api head-object \
+            --bucket healthform-backups-west \
+            --key test-replication.txt \
+            --region us-west-2
+          
+          echo "S3 replication test passed"
+
+  dr-validation:
+    name: Disaster Recovery Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Validate DR Procedures
+        run: |
+          # Test database failover capability
+          echo "Testing RDS failover readiness..."
+          
+          # Check Multi-AZ configuration
+          MULTI_AZ=$(aws rds describe-db-instances \
+            --db-instance-identifier healthform-db \
+            --query 'DBInstances[0].MultiAZ' \
+            --output text)
+          
+          if [ "$MULTI_AZ" != "True" ]; then
+            echo "DR validation failed: Multi-AZ not enabled"
+            exit 1
+          fi
+          
+          echo "DR validation passed: Multi-AZ enabled"
+          
+          # Test ECS service scaling
+          echo "Testing ECS service scaling..."
+          aws ecs update-service \
+            --cluster healthform-cluster \
+            --service healthform-ai-validator \
+            --desired-count 3
+          
+          sleep 60
+          
+          # Reset to normal
+          aws ecs update-service \
+            --cluster healthform-cluster \
+            --service healthform-ai-validator \
+            --desired-count 2
+
+  security-audit:
+    name: Security Compliance Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Check Security Hub Findings
+        run: |
+          # Get high/critical findings
+          FINDINGS=$(aws securityhub get-findings \
+            --filters '{"SeverityLabel":[{"Value":"HIGH","Comparison":"EQUALS"},{"Value":"CRITICAL","Comparison":"EQUALS"}],"RecordState":[{"Value":"ACTIVE","Comparison":"EQUALS"}]}' \
+            --query 'length(Findings)')
+          
+          echo "High/Critical findings: $FINDINGS"
+          
+          if [ "$FINDINGS" -gt 0 ]; then
+            echo "Security audit failed: $FINDINGS high/critical findings"
+            exit 1
+          fi
+          
+          echo "Security audit passed: No high/critical findings"
+      
+      - name: Verify GuardDuty Status
+        run: |
+          # Check GuardDuty detector status
+          DETECTOR_ID=$(aws guardduty list-detectors --query 'DetectorIds[0]' --output text)
+          STATUS=$(aws guardduty get-detector --detector-id $DETECTOR_ID --query 'Status' --output text)
+          
+          if [ "$STATUS" != "ENABLED" ]; then
+            echo "GuardDuty is not enabled"
+            exit 1
+          fi
+          
+          echo "GuardDuty is enabled and active"
+
+  performance-test:
+    name: Performance and SLO Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Load Test with Artillery
+        run: |
+          npm install -g artillery
+          
+          # Get ALB DNS name
+          ALB_DNS=$(aws elbv2 describe-load-balancers \
+            --names healthform-alb \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+          
+          # Create Artillery config
+          cat > artillery-config.yml << EOF
+          config:
+            target: 'http://$ALB_DNS'
+            phases:
+              - duration: 300
+                arrivalRate: 10
+          scenarios:
+            - name: "Health check"
+              requests:
+                - get:
+                    url: "/health"
+          EOF
+          
+          # Run load test
+          artillery run artillery-config.yml
+      
+      - name: Check SLO Compliance
+        run: |
+          # Query CloudWatch for SLO metrics (last 24 hours)
+          END_TIME=$(date -u +%Y-%m-%dT%H:%M:%S)
+          START_TIME=$(date -u -d '24 hours ago' +%Y-%m-%dT%H:%M:%S)
+          
+          # Check availability (should be > 99.9%)
+          AVAILABILITY=$(aws cloudwatch get-metric-statistics \
+            --namespace AWS/ELB \
+            --metric-name HealthyHostCount \
+            --dimensions Name=LoadBalancer,Value=healthform-alb \
+            --statistics Average \
+            --start-time $START_TIME \
+            --end-time $END_TIME \
+            --period 3600 \
+            --query 'Datapoints[0].Average')
+          
+          echo "Current availability: $AVAILABILITY"
+          
+          # Check response time (should be < 2s for 95% of requests)
+          RESPONSE_TIME=$(aws cloudwatch get-metric-statistics \
+            --namespace AWS/ELB \
+            --metric-name TargetResponseTime \
+            --dimensions Name=LoadBalancer,Value=healthform-alb \
+            --statistics Average \
+            --start-time $START_TIME \
+            --end-time $END_TIME \
+            --period 3600 \
+            --query 'Datapoints[0].Average')
+          
+          echo "Average response time: $RESPONSE_TIME seconds"
+
+  notify-results:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [backup-test, dr-validation, security-audit, performance-test]
+    if: always()
+    steps:
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          channel: '#monitoring'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          custom_payload: |
+            {
+              "text": "Weekly Monitoring Report",
+              "attachments": [
+                {
+                  "color": "${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}",
+                  "fields": [
+                    {
+                      "title": "Backup Test",
+                      "value": "${{ needs.backup-test.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "DR Validation",
+                      "value": "${{ needs.dr-validation.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Security Audit",
+                      "value": "${{ needs.security-audit.result }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Performance Test",
+                      "value": "${{ needs.performance-test.result }}",
+                      "short": true
+                    }
+                  ]
+                }
+              ]
+            }
